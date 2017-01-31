@@ -1,2 +1,2 @@
-# gamesparkJavaFX
-This is an example of how to use gamespark with JavaFX
+# gamesparksJavaFX
+This is an example of how to use gamesparks with JavaFX
