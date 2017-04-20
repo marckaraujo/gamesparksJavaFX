@@ -1,7 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'javafx-gradle-plugin'
 apply plugin: 'maven'
-apply plugin: 'no.tornado.fxlauncher'
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -9,9 +8,7 @@ sourceCompatibility = '1.8'
 
 buildscript {
     dependencies {
-        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.7.0'
-        classpath group: 'no.tornado', name: 'fxlauncher-gradle-plugin', version: '1.0.14'
-        classpath 'no.tornado:fxlauncher-gradle-plugin:1.0.14'
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
     }
     repositories {
         jcenter()
@@ -20,13 +17,6 @@ buildscript {
     }
 }
 
-fxlauncher {
-    applicationVendor 'Pro AK'
-    applicationUrl 'http://fxldemo.tornado.no/'
-    applicationMainClass 'com.gamespark.test.main'
-    acceptDowngrade false
-    deployTarget 'w48839@fxldemo.tornado.no:fxldemo'
-}
 // NetBeans will automatically add "run" and "debug" tasks relying on the
 // "mainClass" property. You may however define the property prior executing
 // tasks by passing a "-PmainClass=<QUALIFIED_CLASS_NAME>" argument.
@@ -38,26 +28,54 @@ if (!hasProperty('mainClass')) {
     ext.mainClass = 'com.gamespark.test.main'
 }
 
+
+jfx {
+    // minimal requirement for jfxJar-task
+    mainClass = 'com.gamespark.test.main'
+
+    // minimal requirement for jfxNative-task
+    vendor = 'ProAK'
+    
+    bundleArguments = [
+        // dont bundle JRE (not recommended, but increases build-size/-speed)
+        runtime: null
+    ]
+}
+
 repositories {
+    jcenter()
+    mavenLocal()
     mavenCentral()
-    maven { url "http://repo.gamesparks.net/mvn" }
     maven { url "https://jitpack.io" }
-    // You may define additional repositories, or even remove "mavenCentral()".
-    // Read more about repositories here:
-    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:repositories
+    maven { url "http://repo.gamesparks.net/mvn" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
-    // TODO: Add dependencies here ...
-    // You can read more about how to add dependency here:
-    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
-    testCompile group: 'junit', name: 'junit', version: '4.10'
-    compile group: 'com.gamesparks.sdk', name: 'gamesparks-java-sdk', version:'0.2.1-SNAPSHOT'
+    compile group: 'org.controlsfx', name: 'controlsfx', version:'8.40.12'
+    compile group: 'com.squareup.retrofit2', name: 'retrofit', version:'2.1.0'
+    compile group: 'com.squareup.retrofit2', name: 'converter-gson', version:'2.1.0'
     compile group: 'com.google.code.gson', name: 'gson', version:'2.8.0'
-    compile group: 'org.hibernate', name: 'hibernate-entitymanager', version:'5.2.5.Final'
     compile group: 'com.h2database', name: 'h2', version:'1.4.193'
-    compile group: 'org.hibernate', name: 'hibernate-core', version:'5.2.5.Final'
+    compile group: 'org.hibernate', name: 'hibernate-core', version:'5.2.8.Final'
     compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version:'1.0.0.Final'
+    compile group: 'org.hibernate', name: 'hibernate-c3p0', version:'5.2.8.Final'
     compile group: 'org.jboss', name: 'jandex', version:'2.0.3.Final'
-    compile group: 'com.github.marconi1992', name: 'kairos-framework', version:'0.5'
+    compile group: 'com.github.marconi1992', name: 'kairos-framework', version:'0.5' {
+        exclude group: 'com.github.marconi1992', module: 'kairos-material-components'
+    }
+    compile group: 'com.gamesparks.sdk', name: 'gamesparks-java-sdk', version:'0.2.1-SNAPSHOT'
+    compile group: 'se.bjurr.jmib', name: 'java-method-invocation-builder', version:'1.2'
+    compile group: 'io.socket', name: 'socket.io-client', version:'0.8.3'
+    compile group: 'com.maxmind.geoip2', name: 'geoip2', version:'2.8.0'
+    compile group: 'org.kie.modules', name: 'org-apache-commons-lang3', version:'6.5.0.Final'
+    compile group: 'com.github.dblock', name: 'oshi-core', version:'3.3'
+    compile group: 'com.github.dblock', name: 'oshi-json', version:'3.3'
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-dynamodb', version:'1.11.102'
+    compile group: 'org.hildan.fxgson', name: 'fx-gson', version:'2.0.1'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
 }
+
